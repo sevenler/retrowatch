@@ -229,7 +229,8 @@ public class RetroWatchService extends Service implements IContentManagerListene
 			ncomp.setTicker(ticker);
 		ncomp.setSmallIcon(R.drawable.ic_launcher);
 		ncomp.setAutoCancel(true);
-		nManager.notify((int)System.currentTimeMillis(),ncomp.build());
+		//DOING 兼容API 16以下
+		nManager.notify((int)System.currentTimeMillis(),ncomp.getNotification());
 	}
 	
 	private void sendTimeToDevice() {
@@ -288,6 +289,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 		}
 	}
 	
+	//DOING 发送消息
 	private boolean sendContentsToDevice(ContentObject obj) {
 		if(obj == null || mTransactionBuilder==null || !obj.mIsEnabled
 				/*|| obj.mId < 0*/ || obj.mFilteredString == null || obj.mFilteredString.length() < 1)
@@ -774,7 +776,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 		
 	}	// End of class NotificationReceiver
 	
-	
+	//DOING 添加短信提示
 	public SmsListener mSmsListener = new SmsListener();
 	public class SmsListener extends BroadcastReceiver{
 		public SmsListener() {
@@ -783,6 +785,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			// 详情看 http://blog.csdn.net/fm9333/article/details/12751597
 			if(intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")){
 				Bundle bundle = intent.getExtras();           //---get the SMS message passed in---
 				SmsMessage[] msgs = null;
@@ -819,9 +822,10 @@ public class RetroWatchService extends Service implements IContentManagerListene
 		@Override
 		public void onCallStateChanged(int state, String incomingNumber) {
 			Logs.d(TAG, "PhoneStateListener - onCallStateChanged();");
+			//监听电话状态demo，http://www.pocketdigi.com/20110725/417.html
 			switch (state) {
-			case TelephonyManager.CALL_STATE_IDLE:
-			case TelephonyManager.CALL_STATE_RINGING:
+			case TelephonyManager.CALL_STATE_IDLE://挂断
+			case TelephonyManager.CALL_STATE_RINGING://响铃
 				ContentObject co = mContentManager.addCallObject(state, incomingNumber);
 				if(mActivityHandler != null)
 					mActivityHandler.obtainMessage(Constants.MESSAGE_CALL_STATE_RECEIVED, co).sendToTarget();
@@ -831,7 +835,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 				else
 					deleteEmergencyOfDevice(EmergencyObject.EMERGENCY_TYPE_CALL_STATE);
 				break;
-			case TelephonyManager.CALL_STATE_OFFHOOK:
+			case TelephonyManager.CALL_STATE_OFFHOOK://接听
 			default:
 				Logs.d(TAG, "PhoneStateListener - Default state="+state+", Number="+incomingNumber);
 				break;

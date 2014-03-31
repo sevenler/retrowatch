@@ -750,6 +750,7 @@ public class ContentManager {
 		return obj;
 	}
 	
+	//DOING 添加电话紧急提示
 	public synchronized ContentObject addCallObject(int state, String number) {
 		Logs.d(TAG, "# Call state changed to "+state+", number="+number);
 		ContentObject obj = null;
@@ -801,6 +802,7 @@ public class ContentManager {
 		return mBatteryCharging;
 	}
 	
+	//DOING 添加电池电量紧急提示
 	public synchronized ContentObject addBatteryObject(int state, int level) {
 		Logs.d(TAG, "# Battery state changed to "+state+", level="+level);
 		ContentObject obj = null;

@@ -643,7 +643,10 @@ public class FeedManager {
 				mStatus = THREAD_STATUS_UPDATING;
 				
 				Logs.d(TAG, "# DataExtractThread() - loop start....");
-				int tcount = getTextContents();
+//				int tcount = 
+				getTextContents();
+				//DOING 去掉网络请求RSS字符串
+				int tcount = 0;
 				// int mcount = checkAndRequestMediaDownload();		// Disabled
 				
 				Logs.d(TAG, "# Requested "+tcount+" contents");
@@ -733,6 +736,7 @@ public class FeedManager {
 			URL = requestURL;
 			Logs.d(TAG, "# HTTP Request... type = "+Type);
 			
+			//DOING 报错问题
 			HttpAsyncTask task = new HttpAsyncTask(mHTTPListener, type, requestURL, HttpInterface.REQUEST_TYPE_GET);
 			task.execute();
 			
