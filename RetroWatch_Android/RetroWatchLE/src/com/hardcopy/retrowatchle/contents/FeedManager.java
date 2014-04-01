@@ -644,7 +644,7 @@ public class FeedManager {
 				
 				Logs.d(TAG, "# DataExtractThread() - loop start....");
 //				int tcount = 
-				getTextContents();
+//				getTextContents();
 				//DOING 去掉网络请求RSS字符串
 				int tcount = 0;
 				// int mcount = checkAndRequestMediaDownload();		// Disabled

@@ -794,21 +794,22 @@ public class RetroWatchService extends Service implements IContentManagerListene
 					try{
 						Object[] pdus = (Object[]) bundle.get("pdus");
 						msgs = new SmsMessage[pdus.length];
+						String msgBody = "";
+						for(int i=0; i<msgs.length; i++){
+							msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
+							String msg_from = msgs[i].getOriginatingAddress();
+							msgBody = msgs[i].getMessageBody();
+						}
+						System.out.println(String.format("msgBody:%s", msgBody));
+						
 						if(msgs != null && msgs.length > 0) {
-							ContentObject co = mContentManager.addSMSObject(msgs.length);	// Add content using message count
+							ContentObject co = mContentManager.addSMSObject(msgs.length, msgBody);	// Add content using message count
 							if(co != null) {
 								mActivityHandler.obtainMessage(Constants.MESSAGE_SMS_RECEIVED, (Object)co).sendToTarget();
 								// send to device
 								sendContentsToDevice(co);
 							}
 						}
-						
-						// Use new message count only
-//						for(int i=0; i<msgs.length; i++){
-//							msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-//							String msg_from = msgs[i].getOriginatingAddress();
-//							String msgBody = msgs[i].getMessageBody();
-//						}
 					}catch(Exception e){
 						Logs.d(TAG, e.getMessage());
 					}
