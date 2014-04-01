@@ -109,9 +109,9 @@ public class Utils {
 		return null;
 	}
 	
-	public static String getCallTypeString(int type) {
+	public static String getCallTypeString(int type, String nubmer) {
 		if(type > -1 && type < mCallTypeString.length) {
-			return mCallTypeString[type];
+			return String.format(mCallTypeString[type], nubmer);
 		}
 		return null;
 	}

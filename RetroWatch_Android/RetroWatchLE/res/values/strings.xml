@@ -217,8 +217,8 @@
     </string-array>
     
     <string-array name="call_type_array">
-        <item>Call state idle</item>
-        <item>Call received</item>
+        <item>Call state idle %s </item>
+        <item>Call received  %s</item>
     </string-array>
     
     <string-array name="rf_type_array">

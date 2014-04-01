@@ -825,13 +825,25 @@ public class RetroWatchService extends Service implements IContentManagerListene
 			//监听电话状态demo，http://www.pocketdigi.com/20110725/417.html
 			switch (state) {
 			case TelephonyManager.CALL_STATE_IDLE://挂断
+				System.out.println(String.format("incomingNumber:%s", incomingNumber));
+				ContentObject coo = mContentManager.addCallObject(state, incomingNumber);
+				if(mActivityHandler != null)
+					mActivityHandler.obtainMessage(Constants.MESSAGE_CALL_STATE_RECEIVED, coo).sendToTarget();
+				// send to device
+				if(coo != null){
+					System.out.println(String.format("idle obj.mFilteredString:%s", coo.mFilteredString));
+					sendContentsToDevice(coo);
+				}else
+					deleteEmergencyOfDevice(EmergencyObject.EMERGENCY_TYPE_CALL_STATE);
+				break;
 			case TelephonyManager.CALL_STATE_RINGING://响铃
 				ContentObject co = mContentManager.addCallObject(state, incomingNumber);
 				if(mActivityHandler != null)
 					mActivityHandler.obtainMessage(Constants.MESSAGE_CALL_STATE_RECEIVED, co).sendToTarget();
 				// send to device
-				if(co != null)
-					sendContentsToDevice(co);
+				if(co != null){
+					System.out.println(String.format("ringing obj.mFilteredString:%s", co.mFilteredString));
+					sendContentsToDevice(co);}
 				else
 					deleteEmergencyOfDevice(EmergencyObject.EMERGENCY_TYPE_CALL_STATE);
 				break;

@@ -760,17 +760,17 @@ public class ContentManager {
 		removeContentObject(ContentObject.CONTENT_TYPE_EMERGENCY, 
 				ContentObject.TELEPHONY_CALL_PACKAGE_NAME, mEmergencyList);	// Remove from emergency list
 		
-		if(state == EmergencyObject.CALL_STATE_IDLE)	// In idle state, do not add call contents
-			return null;
+//		if(state == EmergencyObject.CALL_STATE_IDLE)	// In idle state, do not add call contents
+//			return null;
 		
 		String strResult = applyFilters(FilterObject.FILTER_TYPE_EMERGENCY, 
-				Utils.getCallTypeString(state),		// Default message string
+				Utils.getCallTypeString(state, number),		// Default message string
 				ContentObject.TELEPHONY_CALL_PACKAGE_NAME);
 		
 		if(strResult != null && !strResult.isEmpty()) {
 			obj = new ContentObject(ContentObject.CONTENT_TYPE_EMERGENCY, 
 					ContentObject.EMERGENCY_ID_CALL_STATE, 					// Fixed ID
-					Utils.getCallTypeString(state), 	// Default message string
+					Utils.getCallTypeString(state, number), 	// Default message string
 					strResult);			// Set replace message. This message will be sent to remote
 			obj.mExtraData = number;
 			obj.mPackageName = ContentObject.TELEPHONY_CALL_PACKAGE_NAME;
@@ -784,6 +784,7 @@ public class ContentManager {
 			mContentList.add(obj);
 			mEmergencyList.add(obj);
 		}
+		
 		return obj;
 	}
 	
