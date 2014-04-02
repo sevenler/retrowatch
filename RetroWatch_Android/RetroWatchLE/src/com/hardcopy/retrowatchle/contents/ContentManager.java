@@ -727,7 +727,7 @@ public class ContentManager {
 		
 		if(count > 0) {
 			String strResult = applyFilters(FilterObject.FILTER_TYPE_MESSAGING, 
-					Integer.toString(count) + " new SMS first message:" + messaage,	// Default message string
+					Integer.toString(count) + " " + messaage,	// Default message string
 					ContentObject.SMS_PACKAGE_NAME);
 			
 			if(strResult != null && !strResult.isEmpty()) {
