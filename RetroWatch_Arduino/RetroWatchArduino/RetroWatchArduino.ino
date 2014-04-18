@@ -354,7 +354,7 @@ void parseCommand(byte c) {
   }
 }
 
-void parseMessage(byte c) {
+void parseMessage(byte c) {   //得到短信内容，内容为C
   if(c == TRANSACTION_END_BYTE) {
     processTransaction();
     TRANSACTION_POINTER = TR_MODE_IDLE;
