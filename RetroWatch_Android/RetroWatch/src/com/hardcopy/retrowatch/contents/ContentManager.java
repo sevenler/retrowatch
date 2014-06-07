@@ -718,7 +718,7 @@ public class ContentManager {
 	}
 	
 	@Deprecated
-	public synchronized ContentObject addSMSObject(int count) {
+	public synchronized ContentObject addSMSObject(int count, String content) {
 		ContentObject obj = null;
 		
 		// Delete cached contents
@@ -728,13 +728,13 @@ public class ContentManager {
 		
 		if(count > 0) {
 			String strResult = applyFilters(FilterObject.FILTER_TYPE_MESSAGING, 
-					Integer.toString(count) + " new SMS",	// Default message string
+					Integer.toString(count) + " SMS" + content,	// Default message string
 					ContentObject.SMS_PACKAGE_NAME);
 			
 			if(strResult != null && !strResult.isEmpty()) {
 				obj = new ContentObject(ContentObject.CONTENT_TYPE_MESSAGING, 
 						ContentObject.MESSAGING_ID_SMS, 					// Fixed ID
-						Integer.toString(count) + " new SMS", 	// Default message string
+						Integer.toString(count) + " SMS " + content, 	// Default message string
 						strResult);			// Set replace message. This message will be sent to remote
 				obj.mPackageName = ContentObject.SMS_PACKAGE_NAME;
 				// If no filter is applied, mFilterIcon is -1.

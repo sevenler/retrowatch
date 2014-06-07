@@ -45,6 +45,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -78,6 +79,18 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 	// Refresh timer
 	private Timer mRefreshTimer = null;
 	
+	//TODO HAND 手动操作
+	public void sendCallState() {
+		if(mService != null){
+			mService.telephonyListener.onCallStateChanged(TelephonyManager.CALL_STATE_RINGING, "10086");
+		}
+	}
+	public void sendMessage(String body){
+		if(mService != null){
+			mService.receiveMessage(body);
+		}
+	}
+	
 	
 	/*****************************************************
 	 * 
@@ -104,7 +117,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 
 		// Create the adapter that will return a fragment for each of the primary sections of the app.
 		mFragmentManager = getSupportFragmentManager();
-		mSectionsPagerAdapter = new RetroWatchFragmentAdapter(mFragmentManager, mContext, this);
+		mSectionsPagerAdapter = new RetroWatchFragmentAdapter(mFragmentManager, this, this);
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -261,11 +274,11 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 			}
 			
 			if(id > Constants.RESPONSE_ADD_FILTER_FAILED) {
-				FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
+				FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
 				frg.addFilter(filterObj);
 				
 				ArrayList<ContentObject> contents = mService.refreshContentObjectList();
-				MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				frg2.deleteMessageAll();
 				frg2.addMessageAll(contents);
 			}
@@ -282,11 +295,11 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 			}
 			
 			if(id2 > Constants.RESPONSE_EDIT_FILTER_FAILED) {
-				FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
+				FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
 				frg.editFilter(filterObject);
 				
 				ArrayList<ContentObject> contents = mService.refreshContentObjectList();
-				MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				frg2.deleteMessageAll();
 				frg2.addMessageAll(contents);
 			}
@@ -296,11 +309,11 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 			if(mService != null && arg4 != null) {
 				FilterObject filter = (FilterObject) arg4;
 				if(mService.deleteFilter(filter.mId) > Constants.RESPONSE_DELETE_FILTER_FAILED) {
-					FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
+					FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
 					frg.deleteFilter(filter.mId);
 					
 					ArrayList<ContentObject> contents = mService.refreshContentObjectList();
-					MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+					MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 					frg2.deleteMessageAll();
 					frg2.addMessageAll(contents);
 				}
@@ -317,7 +330,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 				cpObj = (CPObject) arg4;
 				id5 = mService.addRss(cpObj);
 				if(id5 > -1) {
-					RssFragment frg = (RssFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
+					RssFragment frg = (RssFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
 					frg.addRss(cpObj);
 				}
 			}
@@ -330,7 +343,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 				cpObj2 = (CPObject) arg4;
 				id6 = mService.editRss(cpObj2);
 				if(id6 > -1) {
-					RssFragment frg = (RssFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
+					RssFragment frg = (RssFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
 					frg.editRss(cpObj2);
 				}
 			}
@@ -343,11 +356,11 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 				cpObj3 = (CPObject) arg4;
 				id7 = mService.deleteRss(cpObj3.mId);
 				if(id7 > -1) {
-					RssFragment frg = (RssFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
+					RssFragment frg = (RssFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
 					frg.deleteRss(cpObj3.mId);
 					
 					ArrayList<ContentObject> contents = mService.refreshContentObjectList();
-					MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+					MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 					frg2.deleteMessageAll();
 					frg2.addMessageAll(contents);
 				}
@@ -484,7 +497,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 			mService.sendGetAllNotificationsSignal();		// Delete cached notifications and set refresh signal
 			ArrayList<ContentObject> contents = mService.refreshContentObjectList();	// Get cached contents
 			
-			MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+			MessageListFragment frg2 = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 			frg2.deleteMessageAll();
 			frg2.addMessageAll(contents);
 		}
@@ -533,7 +546,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 	private void getFiltersAll() {
 		if(mService != null) {
 			ArrayList<FilterObject> filterList = mService.getFiltersAll();
-			FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
+			FiltersFragment frg = (FiltersFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_FILTERS);
 			frg.addFilterAll(filterList);
 		}
 	}
@@ -541,7 +554,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 	private void getRssAll() {
 		if(mService != null) {
 			ArrayList<CPObject> cpoList = mService.getRssAll();
-			RssFragment frg = (RssFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
+			RssFragment frg = (RssFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_RSS);
 			frg.addRssAll(cpoList);
 		}
 	}
@@ -602,7 +615,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 			case Constants.MESSAGE_ADD_NOTIFICATION:
 			{
 				ContentObject obj = (ContentObject)msg.obj;
-				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				if(frg != null)
 					frg.addMessage(obj);
 				break;
@@ -611,7 +624,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 			case Constants.MESSAGE_DELETE_NOTIFICATION:
 			{
 				int _id = msg.arg1;
-				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				if(frg != null)
 					frg.deleteMessage(_id);
 				break;
@@ -623,7 +636,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 				if(msg.obj != null) {
 					obj = (ContentObject)msg.obj;
 				}
-				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				if(frg != null) {
 					frg.deleteMessageByTypeAndName(ContentObject.CONTENT_TYPE_MESSAGING, ContentObject.GMAIL_PACKAGE_NAME);
 					frg.addMessage(obj);
@@ -638,7 +651,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 				if(msg.obj != null) {
 					obj = (ContentObject)msg.obj;
 				}
-				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				if(frg != null) {
 					frg.deleteMessageByTypeAndName(ContentObject.CONTENT_TYPE_MESSAGING, ContentObject.SMS_PACKAGE_NAME);
 					frg.addMessage(obj);
@@ -653,7 +666,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 				if(msg.obj != null) {
 					obj = (ContentObject)msg.obj;
 				}
-				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				if(frg != null) {
 					if(msg.what == Constants.MESSAGE_CALL_STATE_RECEIVED)
 						frg.deleteMessageByTypeAndName(ContentObject.CONTENT_TYPE_EMERGENCY, ContentObject.TELEPHONY_CALL_PACKAGE_NAME);
@@ -670,7 +683,7 @@ public class RetroWatchActivity extends FragmentActivity implements ActionBar.Ta
 				if(msg.obj != null) {
 					feedList = (ArrayList<ContentObject>)msg.obj;
 				}
-				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getItem(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
+				MessageListFragment frg = (MessageListFragment) mSectionsPagerAdapter.getFragment(RetroWatchFragmentAdapter.FRAGMENT_POS_MESSAGE_LIST);
 				if(frg != null) {
 					frg.deleteMessageByType(ContentObject.CONTENT_TYPE_FEED);
 					if(feedList != null && feedList.size() > 0)

@@ -17,10 +17,9 @@
 package com.hardcopy.retrowatch;
 
 import java.util.ArrayList;
-
 import com.hardcopy.retrowatch.contents.objects.ContentObject;
 import com.hardcopy.retrowatch.utils.Logs;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,6 +31,7 @@ import android.widget.ListView;
 /**
  * This fragment shows messages to be sent to watch.
  */
+@SuppressLint("ValidFragment") 
 public class MessageListFragment extends Fragment implements IAdapterListener {
 
 	private static final String TAG = "MessageListFragment";
@@ -74,37 +74,45 @@ public class MessageListFragment extends Fragment implements IAdapterListener {
 	}
 	
 	public void addMessage(ContentObject object) {
-		if(object != null) {
+		if(object != null && mMessageListAdapter != null) {
 			mMessageListAdapter.addMessage(object);
 			mMessageListAdapter.notifyDataSetChanged();
 		}
 	}
 	
 	public void addMessageAll(ArrayList<ContentObject> objList) {
-		if(objList != null) {
+		if(objList != null && mMessageListAdapter != null) {
 			mMessageListAdapter.addMessageAll(objList);
 			mMessageListAdapter.notifyDataSetChanged();
 		}
 	}
 	
 	public void deleteMessage(int id) {
-		mMessageListAdapter.deleteMessage(id);
-		mMessageListAdapter.notifyDataSetChanged();
+		if( mMessageListAdapter != null){
+			mMessageListAdapter.deleteMessage(id);
+			mMessageListAdapter.notifyDataSetChanged();
+		}
 	}
 	
 	public void deleteMessageByType(int type) {
-		mMessageListAdapter.deleteMessageByType(type);
-		mMessageListAdapter.notifyDataSetChanged();
+		if( mMessageListAdapter != null){
+			mMessageListAdapter.deleteMessageByType(type);
+			mMessageListAdapter.notifyDataSetChanged();
+		}
 	}
 	
 	public void deleteMessageByTypeAndName(int type, String packageName) {
-		mMessageListAdapter.deleteMessageByTypeAndName(type, packageName);
-		mMessageListAdapter.notifyDataSetChanged();
+		if( mMessageListAdapter != null){
+			mMessageListAdapter.deleteMessageByTypeAndName(type, packageName);
+			mMessageListAdapter.notifyDataSetChanged();
+		}
 	}
 	
 	public void deleteMessageAll() {
-		mMessageListAdapter.deleteMessageAll();
-		mMessageListAdapter.notifyDataSetChanged();
+		if( mMessageListAdapter != null){
+			mMessageListAdapter.deleteMessageAll();
+			mMessageListAdapter.notifyDataSetChanged();
+		}
 	}
 	
 }

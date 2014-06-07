@@ -23,6 +23,11 @@ import android.os.Handler;
 import com.hardcopy.retrowatch.utils.Constants;
 import com.hardcopy.retrowatch.utils.Logs;
 
+/**
+ * TODO HAND 发送消息，定义命令
+ * @author johnny
+ *
+ */
 public class TransactionBuilder {
 	private static final String TAG = "TransactionBuilder";
 	

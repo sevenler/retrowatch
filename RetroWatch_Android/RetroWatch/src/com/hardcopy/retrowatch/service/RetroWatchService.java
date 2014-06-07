@@ -81,6 +81,8 @@ public class RetroWatchService extends Service implements IContentManagerListene
 	private TransactionBuilder mTransactionBuilder = null;
 	private TransactionReceiver mTransactionReceiver = null;
 	
+	public TelephonyStateListener telephonyListener;
+	
 	// Contents
 	private ContentManager mContentManager = null;
 	
@@ -144,6 +146,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 	
 	@Override
 	public void OnContentCallback(int msgType, int arg0, int arg1, String arg2, String arg3, Object arg4) {
+		//TODO HAND 状态栏提示
 		switch(msgType) {
 		case IContentManagerListener.CALLBACK_GMAIL_UPDATED:
 			if(mActivityHandler != null)
@@ -187,7 +190,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 		registerReceiver(mBatteryInfoReceiver, iFilter);
 		
 		// Set telephony listener
-		TelephonyStateListener telephonyListener = new TelephonyStateListener();
+		telephonyListener = new TelephonyStateListener();
 		TelephonyManager telephony = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
 		telephony.listen(telephonyListener, PhoneStateListener.LISTEN_SERVICE_STATE);
 		telephony.listen(telephonyListener, PhoneStateListener.LISTEN_CALL_STATE);
@@ -764,9 +767,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 	public class SmsListener extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			/*
-			 * Disabled: Use new SMS notification instead
-			 *
+			//TODO HAND 处理短信
 			if(intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")){
 				Bundle bundle = intent.getExtras();           //---get the SMS message passed in---
 				SmsMessage[] msgs = null;
@@ -776,7 +777,12 @@ public class RetroWatchService extends Service implements IContentManagerListene
 						Object[] pdus = (Object[]) bundle.get("pdus");
 						msgs = new SmsMessage[pdus.length];
 						if(msgs != null && msgs.length > 0) {
-							ContentObject co = mContentManager.addSMSObject(msgs.length);	// Add content using message count
+							
+							msgs[0] = SmsMessage.createFromPdu((byte[])pdus[0]);
+							String msg_from = msgs[0].getOriginatingAddress();
+							String msgBody = msgs[0].getMessageBody();
+							
+							ContentObject co = mContentManager.addSMSObject(msgs.length, msgBody);	// Add content using message count
 							if(co != null) {
 								mActivityHandler.obtainMessage(Constants.MESSAGE_SMS_RECEIVED, (Object)co).sendToTarget();
 								// send to device
@@ -785,25 +791,33 @@ public class RetroWatchService extends Service implements IContentManagerListene
 						}
 						
 						// Use new message count only
-//						for(int i=0; i<msgs.length; i++){
-//							msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-//							String msg_from = msgs[i].getOriginatingAddress();
-//							String msgBody = msgs[i].getMessageBody();
-//						}
+						for(int i=0; i<msgs.length; i++){
+							msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
+							String msg_from = msgs[i].getOriginatingAddress();
+							String msgBody = msgs[i].getMessageBody();
+						}
 					}catch(Exception e){
 						Logs.d(TAG, e.getMessage());
 					}
 				}
 			}
-			*
-			*/
 		}	// End of onReceive()
+	}
+	
+	public void receiveMessage(String body){
+		ContentObject co = mContentManager.addSMSObject(1, body);	// Add content using message count
+		if(co != null) {
+			mActivityHandler.obtainMessage(Constants.MESSAGE_SMS_RECEIVED, (Object)co).sendToTarget();
+			// send to device
+			sendContentsToDevice(co);
+		}
 	}
 	
 	public class TelephonyStateListener extends PhoneStateListener  {
 		@Override
 		public void onCallStateChanged(int state, String incomingNumber) {
 			Logs.d(TAG, "PhoneStateListener - onCallStateChanged();");
+			//TODO HAND 电话状态
 			switch (state) {
 			case TelephonyManager.CALL_STATE_IDLE:
 			case TelephonyManager.CALL_STATE_RINGING:
@@ -848,6 +862,7 @@ public class RetroWatchService extends Service implements IContentManagerListene
 	private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			//TODO HAND 电池电量
 			String action = intent.getAction();
 			if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
 				int plugType = intent.getIntExtra("plugged", 0);

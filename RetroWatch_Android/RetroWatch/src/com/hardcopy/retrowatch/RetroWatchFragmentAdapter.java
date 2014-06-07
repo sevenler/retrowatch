@@ -33,18 +33,20 @@ public class RetroWatchFragmentAdapter extends FragmentPagerAdapter {
 	public static final String TAG = "RetroWatchFragmentAdapter";
 	
 	// Total count
-	public static final int FRAGMENT_COUNT = 4;
+	//	public static final int FRAGMENT_COUNT = 4;
+	public static final int FRAGMENT_COUNT = 1;
 	
     // Fragment position
     public static final int FRAGMENT_POS_MESSAGE_LIST = 0;
     public static final int FRAGMENT_POS_FILTERS = 1;
     public static final int FRAGMENT_POS_RSS = 2;
     public static final int FRAGMENT_POS_WATCH_CONTROL = 3;
+    public static final int FRAGMENT_POS_WATCH_HOME = 99;
     
 	public static final String ARG_SECTION_NUMBER = "section_number";
     
     // System
-    private Context mContext = null;
+    private RetroWatchActivity mContext = null;
     private IFragmentListener mFragmentListener = null;
     
     private Fragment mMessageListFragment = null;
@@ -52,7 +54,7 @@ public class RetroWatchFragmentAdapter extends FragmentPagerAdapter {
     private Fragment mRssFragment = null;
     private Fragment mWatchControlFragment = null;
 	
-	public RetroWatchFragmentAdapter(FragmentManager fm, Context c, IFragmentListener l) {
+	public RetroWatchFragmentAdapter(FragmentManager fm, RetroWatchActivity c, IFragmentListener l) {
 		super(fm);
 		mContext = c;
 		mFragmentListener = l;
@@ -60,6 +62,10 @@ public class RetroWatchFragmentAdapter extends FragmentPagerAdapter {
 
 	@Override
 	public Fragment getItem(int position) {
+		return getFragment(FRAGMENT_POS_WATCH_HOME);
+	}
+	
+	public Fragment getFragment(int position) {
 		// getItem is called to instantiate the fragment for the given page.
 		Fragment fragment;
 		boolean needToSetArguments = false;
@@ -91,7 +97,8 @@ public class RetroWatchFragmentAdapter extends FragmentPagerAdapter {
 				needToSetArguments = true;
 			}
 			fragment = mWatchControlFragment;
-			
+		} else if( position == FRAGMENT_POS_WATCH_HOME){
+			fragment = new HomeFragment(mContext);
 		} else {
 			fragment = null;
 		}
